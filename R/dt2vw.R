@@ -16,7 +16,8 @@
 #'@param tag [string] tag of each line of the dataset
 #'@param hard_parse [bool] if equals true, parses the data more strictly to avoid feeding VW with false categorical
 #'variables like '_', or same variables perceived differently like "_var" and "var"
-#'@import data.table
+#' @param append [bool] data to be appended to result file
+#' @import data.table
 #'@export
 dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag = NULL, hard_parse = F, append = F)
 {
@@ -65,11 +66,16 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
   }
 
   ###   NAMESPACE LOAD WITH A YAML FILE
-  if(typeof(namespaces) == "character" && length(namespaces) == 1 && str_sub(namespaces, -4, -1) == "yaml")
+    if(typeof(namespaces) == "character" && length(namespaces) == 1 &&
+       ##str_sub(namespaces, -4, -1) == "yaml")
+       grepl("yaml$", namespaces))
   {
     print("###############  USING YAML FILE FOR LOADING THE NAMESPACES  ###############")
-    library(yaml)
-    namespaces = yaml.load_file(namespaces)
+    if (requireNamespace("yaml", quiet=TRUE, as.character=TRUE)) {
+        namespaces = yaml::yaml.load_file(namespaces)
+    } else {
+        stop("The 'yaml' package is needed.", .Call=FALSE)
+    }
   }
 
   ###   AVOIDING DATA FORMAT PROBLEMS

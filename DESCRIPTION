@@ -1,12 +1,15 @@
 Package: r.vw
 Type: Package
-Title: interface between R and Vowpal Wabbit
-Version: 0.1
+Title: Minimal Interface Between R and Vowpal Wabbit
+Version: 0.1.1
 Date: 2015-10-07
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
-License: BSD
-LazyData: TRUE
-Imports: pROC,
-    data.table,
-    ggplot2
+Author: Dirk Eddelbuettel, Selim Raboudi (initial version of package,
+ including functions dt2vw and vw)
+Maintainer: Dirk Eddelbuettel <edd@debian.org>
+Description: A basic R interface to the Vowpal Wabbit fast on-line learner
+ is provided.
+SystemRequirements: The Vowpal Wabbit binary 'vw' has to be in the path.
+License: BSD_2_clause + file LICENSE
+Imports: pROC, data.table
+Suggests: yaml
+RoxygenNote: 5.0.1

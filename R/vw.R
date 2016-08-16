@@ -25,15 +25,14 @@
 #' a temporary file then deleted.
 #'@param loss loss function. By default logistic.
 #'@param b number of bits for the weight vector allocation
-#'@param learning_rate
-#'@param passes
+#'@param learning_rate TBD
+#'@param passes TBD
 #'@param l1 l1 regularization
 #'@param l2 l2 regularization
-#'@param early_terminate
-#'@param interactions Add interaction terms. Can be passed in extra also.
+#'@param early_terminate TBD
+#   ##'@param interactions Add interaction terms. Can be passed in extra also.
 #'@param link_function used to generate predictions
 #'@param extra These is where more VW commands can be passed as text
-#'@param out_probs filename to write probabilities
 #'@param validation_labels file to look for validation data true labels - to compute auc using perf
 #'or roc_auc() from the R package pROC. If the validation data is a [data.frame] and validation_labels
 #'is NULL, the validation labels file is deleted before exiting the function. If validation_labels is not
@@ -42,6 +41,7 @@
 #'@param keep_preds TRUE (default) to return a vector of the predictions
 #'@param do_evaluation TRUE to compute auc on validation_data. Use FALSE, to just score data
 #'@param use_perf use perf to compute auc. Otherwise, auc_roc() from the R package pROC is used.
+#' @param plot_roc [bool] should ROC be plotted
 #'@examples
 #'# 1. Create a training set (training_data) and validation set (validation_data) in vw format.
 #'# 2. Install perf
@@ -160,7 +160,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
   if(keep_preds)
     probs = fread(out_probs)[['V1']]
-  
+
   ## delete temporary files
   for(i in 1:2)
     if("data.frame" %in% class(data_args[[i]]))
