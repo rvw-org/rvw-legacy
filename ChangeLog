@@ -1,0 +1,15 @@
+2016-08-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version): 0.1.1 now passes R CMD check
+
+	* DESCRIPTION: Rewritten / adapted to current standards
+	* NAMESPACE: Updated
+	* LICENSE: Added per BSD_2_clause requirements
+	* R/vw.R: Roxygen documentation update, minimal changes
+	* R/dt2vw.R: Ditto
+	* man/vw.Rd: Updated 
+	* man/dt2vw.Rd: Ditto
+
+	* DESCRIPTION (Version): 0.1.0 committed 'as is' as intial commit
+
+
