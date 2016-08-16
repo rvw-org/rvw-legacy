@@ -1,4 +1,4 @@
-Package: r.vw
+Package: rvw
 Type: Package
 Title: Minimal Interface Between R and Vowpal Wabbit
 Version: 0.1.1
