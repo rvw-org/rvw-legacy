@@ -1,3 +1,9 @@
+2016-08-17  Dirk Eddelbuettel  <edd@debian.org>
+
+	* demo/vw_example.R: Updated (old_ example
+
+	* demo/vw_example_2.R: Updated (old) example_2
+
 2016-08-16  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION (Version): 0.1.1 now passes R CMD check
