@@ -1,6 +1,11 @@
 
-## originally source:  vowpal_wabbit/R/vw_example.R
-
+## original source:  vowpal_wabbit/R/vw_example.R
+##
+## written by (per 'git log'):
+##   Selim Raboudi <selim.raboudi@gmail.com>
+## and released under (3 clause) BSD like rest of vowpal_wabbit
+##
+## now maintained here by Dirk Eddelbuettel as part of rvw
 
 ## NEVER EVER DO THIS: rm(list = ls(all = TRUE)); gc()
 
@@ -53,11 +58,17 @@ namespaces <- list(n = list(varName = data_types$num_vars, keepSpace=FALSE),
 
 dt$y <- with(dt, ifelse(y < 5.71, 1, -1))
 dt2vw(dt, 'diamonds.vw', namespaces, target=target, weight=NULL)
-system('head -3 diamonds.vw')
+##system('head -3 diamonds.vw')
+print(dt)
 
-# prepare dataset for validation
-system('head -10000 diamonds.vw > X_train.vw ')
-system('tail -43940 diamonds.vw > X_valid.vw ')
+## prepare dataset for validation
+##system('head -10000 diamonds.vw > X_train.vw ')
+##system('tail -43940 diamonds.vw > X_valid.vw ')
+## do this without system() calls
+allLines <- readLines("diamonds.vw")
+N <- length(allLines)
+writeLines(allLines[1:10000], "X_train.vw")
+writeLines(allLines[10001:N], "X_valid.vw")
 write.table(tail(dt$y,43940), file='valid_labels.txt',
             row.names = FALSE, col.names = FALSE, quote = FALSE)
 
@@ -98,7 +109,8 @@ grid <- expand.grid(l1=c(1e-07, 1e-08),
 
 
 cat('Running grid search\n')
-pdf('ROCs.pdf')
+##pdf('ROCs.pdf')
+op <- par(mfrow=c(4,4))
 aucs <- lapply(1:nrow(grid), function(i) {
     g <- grid[i, ]
     auc <- vw(training_data=training_data, # files relative paths
@@ -114,7 +126,7 @@ aucs <- lapply(1:nrow(grid), function(i) {
               )
     auc$auc
 })
-dev.off()
+#dev.off()
 
 results <- cbind(iter=1:nrow(grid), grid, auc=do.call(rbind, aucs))
 print(results)

@@ -4,7 +4,8 @@
 	vowpal wabbit itself uses
 	* LICENSE: Ditto
 
-	* demo/vw_example.R: Updated (old_ example
+	* demo/vw_example.R: Updated (old) example, no longer uses system,
+	files in R's temp directory
 
 	* demo/vw_example_2.R: Updated (old) example_2
 
