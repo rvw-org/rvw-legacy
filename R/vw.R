@@ -88,8 +88,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
 
     ## this should not create an unnecessary copy of the arguments
-    data_args = list(train = training_data, val = validation_data)
-    path_data_args = list(path_vw_data_train, path_vw_data_val)
+    data_args <- list(train = training_data, val = validation_data)
+    path_data_args <- list(path_vw_data_train, path_vw_data_val)
     for(i in 1:2) {
         if("data.frame" %in% class(data_args[[i]])) {
             if(is.null(target))
@@ -97,70 +97,70 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
                             "data argument: input argument is a data.frame, argument 'target' should be specified "))
 
             if(class(path_data_args[[i]]) != "character")
-                path_data_args[[i]] = paste0(tempdir(),"/", names(data_args)[i],".vw")
+                path_data_args[[i]] <- paste0(tempdir(),"/", names(data_args)[i],".vw")
 
             dt2vw(data = data_args[[i]], fileName = path_data_args[[i]],
                   namespaces = namespaces, target = target, weight = weight, tag = tag)
         } else {
-            path_data_args[[i]] = data_args[[i]]
+            path_data_args[[i]] <- data_args[[i]]
         }
     }
 
-    training_data = path_data_args[[1]]
-    cmd = sprintf('vw -d %s --loss_function %s -f %s', training_data, loss, model)
-    cmd = sprintf('%s --learning_rate=%s --passes %s -c', cmd, learning_rate, passes)
+    training_data <- path_data_args[[1]]
+    cmd <- sprintf('vw -d %s --loss_function %s -f %s', training_data, loss, model)
+    cmd <- sprintf('%s --learning_rate=%s --passes %s -c', cmd, learning_rate, passes)
 
-    if(!is.null(l1)) cmd = sprintf('%s --l1 %s', cmd, l1)
-    if(!is.null(l2)) cmd = sprintf('%s --l2 %s', cmd, l2)
+    if(!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)
+    if(!is.null(l2)) cmd <- sprintf('%s --l2 %s', cmd, l2)
 
-    if(!is.null(b)) cmd = sprintf('%s -b %s', cmd, b)
+    if(!is.null(b)) cmd <- sprintf('%s -b %s', cmd, b)
 
-    if(!is.null(early_terminate)) cmd = sprintf('%s --early_terminate %s', cmd, early_terminate)
+    if(!is.null(early_terminate)) cmd <- sprintf('%s --early_terminate %s', cmd, early_terminate)
 
-    if(!is.null(extra)) cmd = sprintf('%s %s', cmd, extra)
+    if(!is.null(extra)) cmd <- sprintf('%s %s', cmd, extra)
 
     cat('Model parameters\n', cmd, '\n')
     system(cmd)
 
     if(is.null(out_probs)) {
-        out_probs = paste0(tempdir(),"/preds.vw")
-        del_prob = T
+        out_probs <- paste0(tempdir(),"/preds.vw")
+        del_prob <- TRUE
     } else
-        del_prob = F
+        del_prob <- FALSE
 
-    validation_data = path_data_args[[2]]
-    predict = sprintf('vw -t -i %s -p %s %s -d %s', model, out_probs, link_function, validation_data)
+    validation_data <- path_data_args[[2]]
+    predict <- sprintf('vw -t -i %s -p %s %s -d %s', model, out_probs, link_function, validation_data)
     system(predict)
 
     if(do_evaluation) {
         if("data.frame" %in% class(data_args[[2]])) {
             if(is.null(validation_labels)) {
-                del_val = T
-                validation_labels = paste0(tempdir(),"/val_labs.vw")
+                del_val <- TRUE
+                validation_labels <- paste0(tempdir(),"/val_labs.vw")
             } else
-                del_val = F
+                del_val <- FALSE
 
-            write.table(x = data_args[[2]][[target]], file = validation_labels, row.names = F,
+            write.table(x <- data_args[[2]][[target]], file = validation_labels, row.names = F,
                         col.names = F)
         }
 
         if (use_perf) {
             ## compute auc using perf
-            eval_model = sprintf("perf -ROC -files %s %s | cut -c8-14", validation_labels, out_probs)
-            auc = system(eval_model, intern = TRUE)
+            eval_model <- sprintf("perf -ROC -files %s %s | cut -c8-14", validation_labels, out_probs)
+            auc <- system(eval_model, intern = TRUE)
         } else {
-            auc = roc_auc(out_probs, validation_labels, plot_roc, cmd)
+            auc <- roc_auc(out_probs, validation_labels, plot_roc, cmd)
         }
     }
 
     if(verbose & do_evaluation){
         cat('Model Parameters\n')
         cat(cmd)
-        verbose_log = sprintf('AUC: %s', auc)
+        verbose_log <- sprintf('AUC: %s', auc)
         print(verbose_log)
     }
 
-    if (keep_preds) probs = fread(out_probs)[['V1']]
+    if (keep_preds) probs <- fread(out_probs)[['V1']]
 
     ## delete temporary files
     for (i in 1:2)
@@ -176,22 +176,22 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 # and probabilities (out_file) from vowpal wabbit
 # Also added an option to plot or not the AUC
 roc_auc <- function(out_probs, validation_labels, plot_roc, cmd, ...){
-    probs = fread(out_probs)[['V1']]
-    labels = fread(validation_labels)[['V1']]
+    probs <- fread(out_probs)[['V1']]
+    labels <- fread(validation_labels)[['V1']]
 
     if(!identical(length(probs), length(labels)))
         stop('The length of the probabilities and labels is different')
 
     ## Fix cmd for adding it in title
-    cmd = sapply(strsplit(cmd, '-f'), function(x) paste0(x, collapse='\n'))
-    cmd = sapply(strsplit(cmd, '-c'), function(x) paste0(x, collapse='\n'))
+    cmd <- sapply(strsplit(cmd, '-f'), function(x) paste0(x, collapse='\n'))
+    cmd <- sapply(strsplit(cmd, '-c'), function(x) paste0(x, collapse='\n'))
 
     ## Plot ROC curve and return AUC
-    roc = roc(labels, probs, auc=TRUE, print.auc=TRUE, print.thres=TRUE)
+    roc <- roc(labels, probs, auc=TRUE, print.auc=TRUE, print.thres=TRUE)
     if(plot_roc){
         print(plot.roc(roc, main=cmd, cex.main = 0.5, ...))
     }
 
-    auc_value = as.numeric(roc$auc[[1]])
+    auc_value <- as.numeric(roc$auc[[1]])
     return(auc_value)
 }
