@@ -5,7 +5,7 @@
 \title{Create a vw data file from a R data.frame object}
 \usage{
 dt2vw(data, fileName, namespaces = NULL, target, weight = NULL,
-  tag = NULL, hard_parse = F, append = F)
+  tag = NULL, hard_parse = FALSE, append = FALSE)
 }
 \arguments{
 \item{data}{[data.table] data.table format (to be transformed)}
