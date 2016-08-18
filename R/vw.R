@@ -75,8 +75,6 @@
 #'         passes=20, l1=1e-08, l2=1e-08, early_terminate=2,
 #'         interactions=NULL, extra='--stage_poly')
 #' }
-#' @import pROC
-#' @export
 vw <- function(training_data, validation_data,  model='mdl.vw',
                path_vw_data_train = NULL, path_vw_data_val = NULL,
                target = NULL, namespaces = NULL, weight = NULL, tag = NULL,

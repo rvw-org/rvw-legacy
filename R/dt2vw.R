@@ -32,8 +32,6 @@
 #'  like '_', or same variables perceived differently like "_var"
 #'  and "var"
 #' @param append [bool] data to be appended to result file
-#' @import data.table
-#' @export
 dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag = NULL,
                   hard_parse = FALSE, append = FALSE) {
 
