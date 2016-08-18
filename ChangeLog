@@ -1,3 +1,11 @@
+2016-08-18  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/init.R (.onAttach): Startup code to look for 'vw' and 'perf'
+
+	* demo/vw_example.R: Reindented and other whitespace changes,
+	updated to use '<-' assignments and TRUE/FALSE not T/F
+	* demo/vw_example_2.R: Ditto
+
 2016-08-17  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION (License): Changed to BSD_3_clause which is what
