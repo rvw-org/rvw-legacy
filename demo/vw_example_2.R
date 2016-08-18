@@ -1,5 +1,11 @@
 
-## originally source:  vowpal_wabbit/R/vw_example_2.R
+## original source:  vowpal_wabbit/R/vw_example_2.R
+##
+## written by (per 'git log'):
+##   Selim Raboudi <selim.raboudi@gmail.com>
+## and released under (3 clause) BSD like rest of vowpal_wabbit
+##
+## now maintained here by Dirk Eddelbuettel as part of rvw
 
 library(rvw)                            # changed from r.vw
 
