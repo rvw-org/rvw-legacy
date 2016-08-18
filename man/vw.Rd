@@ -20,33 +20,39 @@ vw(training_data, validation_data, model = "mdl.vw",
 
 \item{model}{name of the model file}
 
-\item{path_vw_data_train}{if training_data is a [data.frame], the path to which to save
-the vw data file. If NULL, the data is stored in a temporary folder and deleted before exiting
-the function}
+\item{path_vw_data_train}{if training_data is a [data.frame], the
+path to which to save the vw data file. If NULL, the data is
+stored in a temporary folder and deleted before exiting the
+function}
 
-\item{path_vw_data_val}{if validation_data is a [data.frame], the path to which to save
-the vw data file. If NULL, the data is stored in a temporary folder and deleted before exiting
-the function}
+\item{path_vw_data_val}{if validation_data is a [data.frame], the
+path to which to save the vw data file. If NULL, the data is
+stored in a temporary folder and deleted before exiting the
+function}
 
-\item{target}{if training_data or validation_data is a [data.frame], the name of the variable
-in the [data.frame] corresponding to the target variable}
+\item{target}{if training_data or validation_data is a [data.frame],
+the name of the variable in the [data.frame] corresponding to
+the target variable}
 
-\item{namespaces}{used only if training_data or validation_data is a [data.frame]. See arguments
-of dt2vw}
+\item{namespaces}{used only if training_data or validation_data is a
+[data.frame]. See arguments of dt2vw}
 
-\item{weight}{used only if training_data or validation_data is a [data.frame]. See arguments
-of dt2vw}
+\item{weight}{used only if training_data or validation_data is a
+[data.frame]. See arguments of dt2vw}
 
-\item{tag}{used only if training_data or validation_data is a [data.frame]. See arguments
-of dt2vw}
+\item{tag}{used only if training_data or validation_data is a
+[data.frame]. See arguments of dt2vw}
 
-\item{out_probs}{path to file where to save the predictions. If NULL, the file is stored in
-a temporary file then deleted.}
+\item{out_probs}{path to file where to save the predictions. If
+NULL, the file is stored in a temporary file then deleted.}
 
-\item{validation_labels}{file to look for validation data true labels - to compute auc using perf
-or roc_auc() from the R package pROC. If the validation data is a [data.frame] and validation_labels
-is NULL, the validation labels file is deleted before exiting the function. If validation_labels is not
-NULL, it indicates the path where validation labels should be stored.}
+\item{validation_labels}{file to look for validation data true
+labels - to compute auc using perf or roc_auc() from the R
+package pROC. If the validation data is a [data.frame] and
+validation_labels is NULL, the validation labels file is
+deleted before exiting the function. If validation_labels is
+not NULL, it indicates the path where validation labels should
+be stored.}
 
 \item{loss}{loss function. By default logistic.}
 
@@ -60,26 +66,32 @@ NULL, it indicates the path where validation labels should be stored.}
 
 \item{l2}{l2 regularization}
 
-\item{early_terminate}{TBD}
+\item{early_terminate}{TBD ##'@param interactions Add interaction}
 
 \item{link_function}{used to generate predictions}
 
 \item{extra}{These is where more VW commands can be passed as text}
 
-\item{keep_preds}{TRUE (default) to return a vector of the predictions}
+\item{keep_preds}{TRUE (default) to return a vector of the
+predictions}
 
-\item{do_evaluation}{TRUE to compute auc on validation_data. Use FALSE, to just score data}
+\item{do_evaluation}{TRUE to compute auc on validation_data. Use
+FALSE, to just score data}
 
-\item{use_perf}{use perf to compute auc. Otherwise, auc_roc() from the R package pROC is used.}
+\item{use_perf}{use perf to compute auc. Otherwise, auc_roc() from
+the R package pROC is used.}
 
 \item{plot_roc}{[bool] should ROC be plotted}
 
-\item{verbose}{mostly used to debug but shows AUC and the vw command used to train the model}
+\item{verbose}{mostly used to debug but shows AUC and the vw command
+used to train the model}
 }
 \description{
-This function is fairly simple and extensible to other problems, so far just supports binary classification.
-Thought to be used in conjuction to perf in order to compute validation metrics on left out datasets.
-See osmot.cs.cornell.edu/kddcup/software.html for more info about perf.
+This function is fairly simple and extensible to other problems, so
+far just supports binary classification.  Thought to be used in
+conjuction to perf in order to compute validation metrics on left
+out datasets.  See osmot.cs.cornell.edu/kddcup/software.html for
+more info about perf.
 }
 \examples{
 # 1. Create a training set (training_data) and validation set (validation_data) in vw format.
