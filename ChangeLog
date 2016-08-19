@@ -1,3 +1,7 @@
+2016-08-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/vw.R (vw): Test for vw and perf binaries
+
 2016-08-18  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/init.R (.onAttach): Startup code to look for 'vw' and 'perf'

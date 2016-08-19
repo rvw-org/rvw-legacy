@@ -84,17 +84,23 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
                link_function='--link=logistic', extra=NULL, keep_preds = TRUE,
                do_evaluation=TRUE, use_perf=TRUE, plot_roc=TRUE, verbose=TRUE){
 
+    if (.pkgenv$vw == "") stop("No 'vw' binary in your PATH.", call.=FALSE)
+
+    if (use_perf && .pkgenv$vw == "") {
+        warning("No 'perf' binary in your PATH. See 'use_perf' to FALSE")
+        use_perf <- FALSE
+    }
 
     ## this should not create an unnecessary copy of the arguments
     data_args <- list(train = training_data, val = validation_data)
     path_data_args <- list(path_vw_data_train, path_vw_data_val)
     for(i in 1:2) {
-        if("data.frame" %in% class(data_args[[i]])) {
-            if(is.null(target))
+        if ("data.frame" %in% class(data_args[[i]])) {
+            if (is.null(target))
                 stop(paste0(names(data_args)[i],
                             "data argument: input argument is a data.frame, argument 'target' should be specified "))
 
-            if(class(path_data_args[[i]]) != "character")
+            if (class(path_data_args[[i]]) != "character")
                 path_data_args[[i]] <- paste0(tempdir(),"/", names(data_args)[i],".vw")
 
             dt2vw(data = data_args[[i]], fileName = path_data_args[[i]],
@@ -108,19 +114,19 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     cmd <- sprintf('vw -d %s --loss_function %s -f %s', training_data, loss, model)
     cmd <- sprintf('%s --learning_rate=%s --passes %s -c', cmd, learning_rate, passes)
 
-    if(!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)
-    if(!is.null(l2)) cmd <- sprintf('%s --l2 %s', cmd, l2)
+    if (!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)
+    if (!is.null(l2)) cmd <- sprintf('%s --l2 %s', cmd, l2)
 
-    if(!is.null(b)) cmd <- sprintf('%s -b %s', cmd, b)
+    if (!is.null(b)) cmd <- sprintf('%s -b %s', cmd, b)
 
-    if(!is.null(early_terminate)) cmd <- sprintf('%s --early_terminate %s', cmd, early_terminate)
+    if (!is.null(early_terminate)) cmd <- sprintf('%s --early_terminate %s', cmd, early_terminate)
 
-    if(!is.null(extra)) cmd <- sprintf('%s %s', cmd, extra)
+    if (!is.null(extra)) cmd <- sprintf('%s %s', cmd, extra)
 
     cat('Model parameters\n', cmd, '\n')
     system(cmd)
 
-    if(is.null(out_probs)) {
+    if (is.null(out_probs)) {
         out_probs <- paste0(tempdir(),"/preds.vw")
         del_prob <- TRUE
     } else
@@ -130,9 +136,9 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     predict <- sprintf('vw -t -i %s -p %s %s -d %s', model, out_probs, link_function, validation_data)
     system(predict)
 
-    if(do_evaluation) {
-        if("data.frame" %in% class(data_args[[2]])) {
-            if(is.null(validation_labels)) {
+    if (do_evaluation) {
+        if ("data.frame" %in% class(data_args[[2]])) {
+            if (is.null(validation_labels)) {
                 del_val <- TRUE
                 validation_labels <- paste0(tempdir(),"/val_labs.vw")
             } else
@@ -151,7 +157,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         }
     }
 
-    if(verbose & do_evaluation){
+    if (verbose & do_evaluation){
         cat('Model Parameters\n')
         cat(cmd)
         verbose_log <- sprintf('AUC: %s', auc)
@@ -177,7 +183,7 @@ roc_auc <- function(out_probs, validation_labels, plot_roc, cmd, ...){
     probs <- fread(out_probs)[['V1']]
     labels <- fread(validation_labels)[['V1']]
 
-    if(!identical(length(probs), length(labels)))
+    if (!identical(length(probs), length(labels)))
         stop('The length of the probabilities and labels is different')
 
     ## Fix cmd for adding it in title
@@ -186,7 +192,7 @@ roc_auc <- function(out_probs, validation_labels, plot_roc, cmd, ...){
 
     ## Plot ROC curve and return AUC
     roc <- roc(labels, probs, auc=TRUE, print.auc=TRUE, print.thres=TRUE)
-    if(plot_roc){
+    if (plot_roc){
         print(plot.roc(roc, main=cmd, cex.main = 0.5, ...))
     }
 
