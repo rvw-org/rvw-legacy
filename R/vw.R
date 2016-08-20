@@ -111,7 +111,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     }
 
     training_data <- path_data_args[[1]]
-    cmd <- sprintf('vw -d %s --loss_function %s -f %s', training_data, loss, model)
+    cmd <- sprintf('%s -d %s --loss_function %s -f %s', .pkgenv$vw, training_data, loss, model)
     cmd <- sprintf('%s --learning_rate=%s --passes %s -c', cmd, learning_rate, passes)
 
     if (!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)

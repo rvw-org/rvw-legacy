@@ -1,3 +1,7 @@
+2016-08-20  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/vw.R (vw): Use vw binary stored in package environment
+
 2016-08-19  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/vw.R (vw): Test for vw and perf binaries
@@ -32,7 +36,7 @@
 	* LICENSE: Added per BSD_2_clause requirements
 	* R/vw.R: Roxygen documentation update, minimal changes
 	* R/dt2vw.R: Ditto
-	* man/vw.Rd: Updated 
+	* man/vw.Rd: Updated
 	* man/dt2vw.Rd: Ditto
 
 	* DESCRIPTION (Version): 0.1.0 committed 'as is' as intial commit
