@@ -1,8 +1,10 @@
 2016-08-20  Dirk Eddelbuettel  <edd@debian.org>
 
-	* R/init.R (.getVW,.getPerf): Helper accessors for vw and perf binaries
+	* R/init.R (.getVW,.getPerf): Helper accessors for vw and perf
+	binaries
 
-	* R/vw.R (vw): Use vw and perf binaries stored in package environment
+	* R/vw.R (vw): Use vw and perf binaries stored in package
+	environment, ouput simplification
 
 2016-08-19  Dirk Eddelbuettel  <edd@debian.org>
 

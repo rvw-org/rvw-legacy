@@ -100,7 +100,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         if ("data.frame" %in% class(data_args[[i]])) {
             if (is.null(target))
                 stop(paste0(names(data_args)[i],
-                            "data argument: input argument is a data.frame, argument 'target' should be specified "))
+                            "data argument: input argument is a data.frame, ",
+                            "argument 'target' should be specified "))
 
             if (class(path_data_args[[i]]) != "character")
                 path_data_args[[i]] <- paste0(tempdir(),"/", names(data_args)[i],".vw")
@@ -157,13 +158,9 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         } else {
             auc <- roc_auc(out_probs, validation_labels, plot_roc, cmd)
         }
-    }
 
-    if (verbose & do_evaluation){
-        cat('Model Parameters\n')
-        cat(cmd)
-        verbose_log <- sprintf('AUC: %s', auc)
-        print(verbose_log)
+        if (verbose) 
+            cat('\nModel Parameters\n', cmd, "\n\nAUC: ", auc, "\n")
     }
 
     if (keep_preds) probs <- fread(out_probs)[['V1']]
