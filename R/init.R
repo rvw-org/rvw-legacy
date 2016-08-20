@@ -24,3 +24,7 @@
     assign("vw", vw, envir=.pkgenv)
     assign("perf", perf, envir=.pkgenv)
 }
+
+
+.getVW   <- function() .pkgenv$vw
+.getPerf <- function() .pkgenv$perf
