@@ -54,15 +54,16 @@
 #'  deleted before exiting the function. If validation_labels is
 #'  not NULL, it indicates the path where validation labels should
 #'  be stored.
-#'@param verbose mostly used to debug but shows AUC and the vw command
+#' @param verbose mostly used to debug but shows AUC and the vw command
 #'  used to train the model
-#'@param keep_preds TRUE (default) to return a vector of the
+#' @param keep_preds TRUE (default) to return a vector of the
 #'  predictions
-#'@param do_evaluation TRUE to compute auc on validation_data. Use
+#' @param do_evaluation TRUE to compute auc on validation_data. Use
 #'  FALSE, to just score data
-#'@param use_perf use perf to compute auc. Otherwise, auc_roc() from
+#' @param use_perf use perf to compute auc. Otherwise, auc_roc() from
 #'  the R package pROC is used.
 #' @param plot_roc [bool] should ROC be plotted
+#' @param keep_tempfiles [bool] should temporary files be kept, default FALSE
 #' @examples
 #' # 1. Create a training set (training_data) and validation set (validation_data) in vw format.
 #' # 2. Install perf
@@ -82,7 +83,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
                loss='logistic', b=25,
                learning_rate=0.5, passes=1, l1=NULL, l2=NULL, early_terminate=NULL,
                link_function='--link=logistic', extra=NULL, keep_preds = TRUE,
-               do_evaluation=TRUE, use_perf=TRUE, plot_roc=TRUE, verbose=TRUE){
+               do_evaluation=TRUE, use_perf=TRUE, plot_roc=TRUE, verbose=TRUE,
+               keep_tempfiles=FALSE) {
 
     if (.pkgenv$vw == "") stop("No 'vw' binary in your PATH.", call.=FALSE)
 
@@ -150,7 +152,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
         if (use_perf) {
             ## compute auc using perf
-            eval_model <- sprintf("%s -ROC -files %s %s | cut -c8-14", .getPert(), validation_labels, out_probs)
+            eval_model <- sprintf("%s -ROC -files %s %s | cut -c8-14", .getPerf(), validation_labels, out_probs)
             auc <- system(eval_model, intern = TRUE)
         } else {
             auc <- roc_auc(out_probs, validation_labels, plot_roc, cmd)
@@ -166,13 +168,15 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
     if (keep_preds) probs <- fread(out_probs)[['V1']]
 
-    ## delete temporary files
-    for (i in 1:2)
-        if ("data.frame" %in% class(data_args[[i]]))
-            file.remove(path_data_args[[i]])
-    if (del_prob) file.remove(out_probs)
-    if (exists("del_val") && del_val) file.remove(validation_labels)
-
+    ## delete temporary files (unless overridden)
+    if (!keep_tempfiles) {
+        for (i in 1:2)
+            if ("data.frame" %in% class(data_args[[i]]))
+                file.remove(path_data_args[[i]])
+        if (del_prob) file.remove(out_probs)
+        if (exists("del_val") && del_val) file.remove(validation_labels)
+    }
+    
     return(list(auc=auc, preds=probs))
 }
 
