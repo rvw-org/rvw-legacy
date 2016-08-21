@@ -3,7 +3,7 @@ library(rvw)
 
 data("etitanic", package="earth")
 dt <- etitanic
-#dt <- read.csv("~/git/rvw/titanic3.csv", quote='"', stringsAsFactors=FALSE)  ## to be made a data file
+#dt <- read.csv("~/git/rvw/extras/titanic3.csv", quote='"', stringsAsFactors=FALSE)  ## to be made a data file
 
 
 set.seed(123)                           # arbitrary but fixed seed
@@ -17,24 +17,21 @@ cwd <- getwd()
 setwd(tempdir())
 
 ## use data directly
-res <- vw(training_data = dt_train,
-          validation_data = dt_val,
-          target = "survived",
-          use_perf = rvw:::.getPerf() != "",
-          passes = 10,
-          verbose = TRUE,
-#          l1 = 0.00000001,
-#          l2 = 0.00000001,
-          keep_tempfiles = TRUE)
-res[["data"]][, actual:=as.factor(dt_val$survived)]
+resvw <- vw(training_data = dt_train,
+            validation_data = dt_val,
+            target = "survived",
+            use_perf = rvw:::getPerf() != "",
+            passes = 10,
+            verbose = TRUE)
+resvw[["data"]][, actual:=as.factor(dt_val$survived)]
 
 setwd(cwd)                              # go back
 
 if (requireNamespace("caret", quietly=TRUE)) {
-    caret::confusionMatrix(ifelse(res[["data"]][,predicted] >= 0.5, 1, 0), res[["data"]][,actual])
+    caret::confusionMatrix(ifelse(resvw[["data"]][,predicted] >= 0.5, 1, 0), resvw[["data"]][,actual])
 }
 
-plotDensity(res[["data"]])
+rvw:::plotDensity(resvw[["data"]])   ## TODO: plot method of a class vw
 
 
 ## glm

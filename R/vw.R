@@ -65,6 +65,7 @@
 #'  the R package pROC is used.
 #' @param plot_roc [bool] should ROC be plotted
 #' @param keep_tempfiles [bool] should temporary files be kept, default FALSE
+#' @param use_cache [bool] should cache files be used, default TRUE
 #' @examples
 #' # 1. Create a training set (training_data) and validation set (validation_data) in vw format.
 #' # 2. Install perf
@@ -85,7 +86,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
                learning_rate=0.5, passes=1, l1=NULL, l2=NULL, early_terminate=NULL,
                link_function='--link=logistic', extra=NULL, keep_preds = TRUE,
                do_evaluation=TRUE, use_perf=TRUE, plot_roc=TRUE, verbose=TRUE,
-               keep_tempfiles=FALSE) {
+               keep_tempfiles=FALSE, use_cache=TRUE) {
 
     if (.pkgenv$vw == "") stop("No 'vw' binary in your PATH.", call.=FALSE)
 
@@ -117,8 +118,9 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
     training_data <- path_data_args[[1]]
     cmd <- sprintf('%s -d %s --loss_function %s -f %s', getVW(), training_data, loss, model)
-    cmd <- sprintf('%s --learning_rate=%s --passes %s -c', cmd, learning_rate, passes)
-
+    cmd <- sprintf('%s --learning_rate=%s --passes %s', cmd, learning_rate, passes)
+    if (use_cache) cmd <- sprintf("%s -c", cmd)
+    
     if (!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)
     if (!is.null(l2)) cmd <- sprintf('%s --l2 %s', cmd, l2)
 
@@ -171,11 +173,16 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
     ## delete temporary files (unless overridden)
     if (!keep_tempfiles) {
-        for (i in 1:2)
-            if ("data.frame" %in% class(data_args[[i]]))
+        for (i in 1:2) {
+            if ("data.frame" %in% class(data_args[[i]])) {
                 file.remove(path_data_args[[i]])
+                cachefile <- paste0(path_data_args[[i]], ".cache") 
+                if (file.exists(cachefile)) unlink(cachefile)
+            }
+        }
         if (del_prob) file.remove(out_probs)
         if (exists("del_val") && del_val) file.remove(validation_labels)
+        if (file.exists("mdl.vw")) file.remove("mdl.vw")
     }
     
     ##return(list(auc=auc, preds=probs))

@@ -11,7 +11,8 @@ vw(training_data, validation_data, model = "mdl.vw",
   learning_rate = 0.5, passes = 1, l1 = NULL, l2 = NULL,
   early_terminate = NULL, link_function = "--link=logistic", extra = NULL,
   keep_preds = TRUE, do_evaluation = TRUE, use_perf = TRUE,
-  plot_roc = TRUE, verbose = TRUE, keep_tempfiles = FALSE)
+  plot_roc = TRUE, verbose = TRUE, keep_tempfiles = FALSE,
+  use_cache = TRUE)
 }
 \arguments{
 \item{training_data}{a [data.frame] or path to a vw data file}
@@ -88,6 +89,8 @@ the R package pROC is used.}
 used to train the model}
 
 \item{keep_tempfiles}{[bool] should temporary files be kept, default FALSE}
+
+\item{use_cache}{[bool] should cache files be used, default TRUE}
 }
 \description{
 This function is fairly simple and extensible to other problems, so
