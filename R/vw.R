@@ -116,7 +116,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     }
 
     training_data <- path_data_args[[1]]
-    cmd <- sprintf('%s -d %s --loss_function %s -f %s', .getVW(), training_data, loss, model)
+    cmd <- sprintf('%s -d %s --loss_function %s -f %s', getVW(), training_data, loss, model)
     cmd <- sprintf('%s --learning_rate=%s --passes %s -c', cmd, learning_rate, passes)
 
     if (!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)
@@ -139,7 +139,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         del_prob <- FALSE
 
     validation_data <- path_data_args[[2]]
-    predict <- sprintf('%s -t -i %s -p %s %s -d %s', .getVW(), model, out_probs, link_function, validation_data)
+    predict <- sprintf('%s -t -i %s -p %s %s -d %s', getVW(), model, out_probs, link_function, validation_data)
     system(predict)
 
     if (do_evaluation) {
@@ -157,7 +157,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
         if (use_perf) {
             ## compute auc using perf
-            eval_model <- sprintf("%s -ROC -files %s %s | cut -c8-14", .getPerf(), validation_labels, out_probs)
+            eval_model <- sprintf("%s -ROC -files %s %s | cut -c8-14", getPerf(), validation_labels, out_probs)
             auc <- system(eval_model, intern = TRUE)
         } else {
             auc <- roc_auc(out_probs, validation_labels, plot_roc, cmd)

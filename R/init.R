@@ -26,5 +26,5 @@
 }
 
 
-.getVW   <- function() .pkgenv$vw
-.getPerf <- function() .pkgenv$perf
+getVW   <- function() .pkgenv$vw
+getPerf <- function() .pkgenv$perf
