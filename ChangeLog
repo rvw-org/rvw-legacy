@@ -1,3 +1,8 @@
+2016-08-21  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/plot.R: New simple density plot function
+	* man/plotDensity.Rd: Documentation
+
 2016-08-20  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/init.R (.getVW,.getPerf): Helper accessors for vw and perf
