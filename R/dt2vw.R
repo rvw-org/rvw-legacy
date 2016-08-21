@@ -78,8 +78,8 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
 
     ##   NAMESPACE LOAD WITH A YAML FILE
     if (typeof(namespaces) == "character" && length(namespaces) == 1 &&
-       ##str_sub(namespaces, -4, -1) == "yaml")
-       grepl("yaml$", namespaces)) {
+        ##str_sub(namespaces, -4, -1) == "yaml")
+        grepl("yaml$", namespaces)) {
         print("###############  USING YAML FILE FOR LOADING THE NAMESPACES  ###############")
         if (requireNamespace("yaml", quiet=TRUE, as.character=TRUE)) {
             namespaces <- yaml::yaml.load_file(namespaces)

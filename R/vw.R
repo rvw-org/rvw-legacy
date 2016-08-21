@@ -39,12 +39,13 @@
 #'  NULL, the file is stored in a temporary file then deleted.
 #' @param loss loss function. By default logistic.
 #' @param b number of bits for the weight vector allocation
-#' @param learning_rate TBD
-#' @param passes TBD
+#' @param learning_rate sets the learning rate, default is 0.5
+#' @param passes sets the number of passes over the data, default 1
 #' @param l1 l1 regularization
 #' @param l2 l2 regularization
-#' @param early_terminate TBD ##'@param interactions Add interaction
-#   terms. Can be passed in extra also.
+#' @param early_terminate specifies the number of passes tolerated
+#'  when holdout loss does not decrease before early termination,
+#   default is 3
 #' @param link_function used to generate predictions
 #' @param extra These is where more VW commands can be passed as text
 #' @param validation_labels file to look for validation data true
@@ -104,7 +105,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
                             "argument 'target' should be specified "))
 
             if (class(path_data_args[[i]]) != "character")
-                path_data_args[[i]] <- paste0(tempdir(),"/", names(data_args)[i],".vw")
+                #path_data_args[[i]] <- paste0(tempdir(),"/", names(data_args)[i],".vw")
+                path_data_args[[i]] <- paste0(names(data_args)[i],".vw")
 
             dt2vw(data = data_args[[i]], fileName = path_data_args[[i]],
                   namespaces = namespaces, target = target, weight = weight, tag = tag)
@@ -130,7 +132,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     system(cmd)
 
     if (is.null(out_probs)) {
-        out_probs <- paste0(tempdir(),"/preds.vw")
+        #out_probs <- paste0(tempdir(),"/preds.vw")
+        out_probs <- "preds.vw"
         del_prob <- TRUE
     } else
         del_prob <- FALSE
@@ -143,7 +146,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         if ("data.frame" %in% class(data_args[[2]])) {
             if (is.null(validation_labels)) {
                 del_val <- TRUE
-                validation_labels <- paste0(tempdir(),"/val_labs.vw")
+                #validation_labels <- paste0(tempdir(),"/val_labs.vw")
+                validation_labels <- "val_labs.vw"
             } else
                 del_val <- FALSE
 
@@ -174,7 +178,12 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         if (exists("del_val") && del_val) file.remove(validation_labels)
     }
     
-    return(list(auc=auc, preds=probs))
+    ##return(list(auc=auc, preds=probs))
+    return(list(auc=auc,
+                data=setDT(data.frame(predicted=probs)), #, actual=as.factor(validation_data[, factor]))),
+                workingdir=getwd(),
+                cmd=cmd))
+           
 }
 
 # Reads labels file (from the validation dataset)

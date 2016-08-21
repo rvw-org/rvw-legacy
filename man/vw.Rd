@@ -58,15 +58,16 @@ be stored.}
 
 \item{b}{number of bits for the weight vector allocation}
 
-\item{learning_rate}{TBD}
+\item{learning_rate}{sets the learning rate, default is 0.5}
 
-\item{passes}{TBD}
+\item{passes}{sets the number of passes over the data, default 1}
 
 \item{l1}{l1 regularization}
 
 \item{l2}{l2 regularization}
 
-\item{early_terminate}{TBD ##'@param interactions Add interaction}
+\item{early_terminate}{specifies the number of passes tolerated
+when holdout loss does not decrease before early termination,}
 
 \item{link_function}{used to generate predictions}
 

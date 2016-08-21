@@ -1,5 +1,10 @@
 2016-08-21  Dirk Eddelbuettel  <edd@debian.org>
 
+	* R/vw.R (vw): Steps towards richer return objects, more arguments
+	documented, all temp files now in current directory, new option to
+	keep files
+	* man/vw.Rd: Updated accordingly
+
 	* R/plot.R: New simple density plot function
 	* man/plotDensity.Rd: Documentation
 
