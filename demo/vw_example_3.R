@@ -25,11 +25,18 @@ cwd <- getwd()
 setwd(tempdir())
 
 ## use data directly
-auc <- vw(training_data = dt_train,
+res <- vw(training_data = dt_train,
           validation_data = dt_val,
           target = "y",
           use_perf = rvw:::.getPerf() != "",
           verbose = TRUE,
           keep_tempfiles = TRUE)
+res[["data"]][, actual:=dt_val$y]
 
 setwd(cwd)                              # go back
+
+if (requireNamespace("caret", quietly=TRUE)) {
+    caret::confusionMatrix(ifelse(res[["data"]][,predicted] >= 0.5, 1, -1), res[["data"]][,actual])
+}
+
+plotDensity(res[["data"]])

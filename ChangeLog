@@ -1,5 +1,7 @@
 2016-08-21  Dirk Eddelbuettel  <edd@debian.org>
 
+	* DESCRIPTION (Suggests): Added caret and ggplot2
+
 	* R/vw.R (vw): Steps towards richer return objects, more arguments
 	documented, all temp files now in current directory, new option to
 	keep files

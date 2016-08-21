@@ -11,5 +11,5 @@ Description: A basic R interface to the Vowpal Wabbit fast on-line learner
 SystemRequirements: The Vowpal Wabbit binary 'vw' has to be in the path.
 License: BSD_3_clause + file LICENSE
 Imports: pROC, data.table
-Suggests: yaml
+Suggests: yaml, caret, ggplot2
 RoxygenNote: 5.0.1
