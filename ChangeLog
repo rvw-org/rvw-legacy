@@ -10,6 +10,8 @@
 	* R/plot.R: New simple density plot function
 	* man/plotDensity.Rd: Documentation
 
+	* demo/vw_example_4.R: Now plots ROC curve with (up to) three models
+
 2016-08-20  Dirk Eddelbuettel  <edd@debian.org>
 
 	* R/init.R (.getVW,.getPerf): Helper accessors for vw and perf
