@@ -1,6 +1,7 @@
 
 library(rvw)
 library(ggplot2)
+library(pROC)
 
 data("etitanic", package="earth")
 dt <- etitanic
@@ -62,5 +63,7 @@ if (requireNamespace("randomForest", quietly=TRUE)) {
     plot(rocrf, col="blue", add=TRUE)
 
 }
+
+legend("bottomright", legend=c("vw", "glm", "rf"), col=c("black","orange","blue"),bty="n",lwd=2)
 
 
