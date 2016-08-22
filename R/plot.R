@@ -14,3 +14,6 @@ plotDensity <- function(x) {
     p <- ggplot(data=x) + geom_density(aes(x=predicted,linetype=actual,color=actual))
     p
 }
+
+## to silence R CMD check --as-cran
+utils::globalVariables(c("predicted", "actual"))

@@ -120,8 +120,10 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
     }
 
     ##appending the name of the variable to its value for each categorical variable
-    sapply(Index, FUN = function(x){sapply(names(x), FUN = function(y){if(x[[y]] == F){
-                                                                           set(data, i=NULL, y, paste0(y,"_",data[[y]]))
+    sapply(Index,
+           FUN = function(x){sapply(names(x),
+                                    FUN = function(y){if(x[[y]] == F){
+                                                          set(data, i=NULL, y, paste0(y,"_",data[[y]]))
                                                     }})})
 
     ##   FIRST PART OF THE VW DATA FORMAT: target, weight, tag

@@ -120,7 +120,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     cmd <- sprintf('%s -d %s --loss_function %s -f %s', getVW(), training_data, loss, model)
     cmd <- sprintf('%s --learning_rate=%s --passes %s', cmd, learning_rate, passes)
     if (use_cache) cmd <- sprintf("%s -c", cmd)
-    
+
     if (!is.null(l1)) cmd <- sprintf('%s --l1 %s', cmd, l1)
     if (!is.null(l2)) cmd <- sprintf('%s --l2 %s', cmd, l2)
 
@@ -141,7 +141,9 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         del_prob <- FALSE
 
     validation_data <- path_data_args[[2]]
-    predict <- sprintf('%s -t -i %s -p %s %s -d %s', getVW(), model, out_probs, link_function, validation_data)
+    predict <- sprintf('%s -t -i %s -p %s %s -d %s',
+                       getVW(), model, out_probs,
+                       link_function, validation_data)
     system(predict)
 
     if (do_evaluation) {
@@ -159,13 +161,14 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 
         if (use_perf) {
             ## compute auc using perf
-            eval_model <- sprintf("%s -ROC -files %s %s | cut -c8-14", getPerf(), validation_labels, out_probs)
+            eval_model <- sprintf("%s -ROC -files %s %s | cut -c8-14",
+                                  getPerf(), validation_labels, out_probs)
             auc <- system(eval_model, intern = TRUE)
         } else {
             auc <- roc_auc(out_probs, validation_labels, plot_roc, cmd)
         }
 
-        if (verbose) 
+        if (verbose)
             cat('\nModel Parameters\n', cmd, "\n\nAUC: ", auc, "\n")
     }
 
@@ -176,7 +179,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         for (i in 1:2) {
             if ("data.frame" %in% class(data_args[[i]])) {
                 file.remove(path_data_args[[i]])
-                cachefile <- paste0(path_data_args[[i]], ".cache") 
+                cachefile <- paste0(path_data_args[[i]], ".cache")
                 if (file.exists(cachefile)) unlink(cachefile)
             }
         }
@@ -184,13 +187,13 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
         if (exists("del_val") && del_val) file.remove(validation_labels)
         if (file.exists("mdl.vw")) file.remove("mdl.vw")
     }
-    
+
     ##return(list(auc=auc, preds=probs))
     return(list(auc=auc,
                 data=setDT(data.frame(predicted=probs)), #, actual=as.factor(validation_data[, factor]))),
                 workingdir=getwd(),
                 cmd=cmd))
-           
+
 }
 
 # Reads labels file (from the validation dataset)

@@ -1,3 +1,15 @@
+2016-08-22  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (License): Use dual license with GPL (>= 2) for my code,
+	and BSD 3-clause for existing code
+
+	* NAMESPACE: All importing now via importFrom()
+
+	* demo/vw_example_4.R: Add library(pROC), add a legend to ROC plot
+	* demo/00Index: Add vw_example4
+
+	* R/plot.R (plotDensity): add utils::globalVariables() for R CMD check
+
 2016-08-21  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION (Suggests): Added caret (confusion matrix), ggplot2
