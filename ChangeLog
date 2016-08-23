@@ -10,6 +10,11 @@
 
 	* R/plot.R (plotDensity): add utils::globalVariables() for R CMD check
 
+	* R/dt2vw.R (dt2vw): If dependent variable is numeric, do not
+	check factor levels
+
+	* demo/vw_example_5.R: New regression example
+
 2016-08-21  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION (Suggests): Added caret (confusion matrix), ggplot2
