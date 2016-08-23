@@ -146,6 +146,7 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
                        link_function, validation_data)
     system(predict)
 
+    auc <- NA                           # fallback
     if (do_evaluation) {
         if ("data.frame" %in% class(data_args[[2]])) {
             if (is.null(validation_labels)) {
@@ -192,7 +193,8 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
     return(list(auc=auc,
                 data=setDT(data.frame(predicted=probs)), #, actual=as.factor(validation_data[, factor]))),
                 workingdir=getwd(),
-                cmd=cmd))
+                fitcmd=cmd,
+                predictcmd=predict))
 
 }
 
