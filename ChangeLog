@@ -1,5 +1,7 @@
 2016-08-23  Dirk Eddelbuettel  <edd@debian.org>
 
+	* demo/vw_example_4.R: Rewritten/extended, now with ctree and gbm
+
 	* demo/vw_example_5.R: Plot predicted vs actual for regression example
 
 	* R/vw.R (vw): Set a AUC fallback value

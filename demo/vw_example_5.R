@@ -31,5 +31,5 @@ dt <- setDT(data.frame(actual=bostonVal[,y], predicted=res[["data"]][,predicted]
 
 ggplot(data=dt, aes(x=actual, y=predicted)) +
        geom_point(alpha=0.5, color="black") +
-       geom_smooth(aes(x=actual, y=predicted), color="black") +
-       geom_smooth(method="lm", se=FALSE, color="blue")
+       geom_smooth(aes(x=actual, y=predicted), color="darkgrey") +
+       geom_smooth(method="lm", se=FALSE, color="orange")
