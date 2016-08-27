@@ -6,13 +6,13 @@ stopifnot(requireNamespace("caret", quietly=TRUE))
 stopifnot(requireNamespace("randomForest", quietly=TRUE))
 stopifnot(requireNamespace("party", quietly=TRUE))
 stopifnot(requireNamespace("gbm", quietly=TRUE))
+stopifnot(requireNamespace("xgboost", quietly=TRUE))
 
 stopifnot(requireNamespace("RColorBrewer", quietly=TRUE))
 cols <- rev(RColorBrewer::brewer.pal(9, "Blues"))
 
 data("etitanic", package="earth")
 dt <- dt2 <- etitanic
-#dt <- read.csv("~/git/rvw/extras/titanic3.csv", quote='"', stringsAsFactors=FALSE)  ## to be made a data file
 dt[, "survived"] <- ifelse(dt[, "survived"] == 1, 1, -1)
 
 set.seed(123)                           # arbitrary but fixed seed
@@ -84,19 +84,22 @@ plot(rocgbm, col=cols[5], add=TRUE)
 
 ## xgboost
 dt_train_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_train)
+dt_val_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_val)
 targetvector <- data.table::data.table(dt_train)[, Y:=0][survived==1, Y:=1][,Y]
 resxgboost <- xgboost::xgboost(data = dt_train_dgc, label=targetvector,
-                               objective="binary:logistic", nrounds=10, eta=1, max.depth=9, verbose=0)
-dt_val_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_val)
-
-predxgboost <- predict(resxgboost, dt_val_dgc)
+                               objective="binary:logistic", nrounds=25, eta=0.75, max.depth=5, 
+                               verbose=1)
+predxgboost <- xgboost::predict(resxgboost, dt_val_dgc)
 rocxgboost <- roc(dd[,actual], predxgboost)
 plot(rocxgboost, col=cols[6], add=TRUE)
 
-
-
 legend("bottomright",
-       legend=c("vw", "glm", "rf", "ctree", "gbm", "xgboost"),
+       legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)), 
+                paste("glm",     format(as.numeric(rocglm$auc), digits=4)),
+                paste("rf",      format(as.numeric(rocrf$auc), digits=4)),
+                paste("ctree",   format(as.numeric(rocparty$auc), digits=4)),
+                paste("gbm",     format(as.numeric(rocgbm$auc), digits=4)),
+                paste("xgboost", format(as.numeric(rocxgboost$auc), digits=4))),
        col=cols[1:6], bty="n", lwd=2)
 
 ## testProbs <- data.frame(obs = dd[,actual],
