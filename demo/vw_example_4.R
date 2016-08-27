@@ -7,6 +7,9 @@ stopifnot(requireNamespace("randomForest", quietly=TRUE))
 stopifnot(requireNamespace("party", quietly=TRUE))
 stopifnot(requireNamespace("gbm", quietly=TRUE))
 
+stopifnot(requireNamespace("RColorBrewer", quietly=TRUE))
+cols <- rev(RColorBrewer::brewer.pal(9, "Blues"))
+
 data("etitanic", package="earth")
 dt <- dt2 <- etitanic
 #dt <- read.csv("~/git/rvw/extras/titanic3.csv", quote='"', stringsAsFactors=FALSE)  ## to be made a data file
@@ -41,7 +44,7 @@ caret::confusionMatrix(ifelse(resvw[["data"]][,predicted] >= 0.5, 1, -1), resvw[
 rvw:::plotDensity(resvw[["data"]])   ## TODO: plot method of a class vw
 
 rocvw <- roc(dd[,actual], dd[, predicted])
-plot(rocvw)
+plot(rocvw, col=cols[1])
 
 
 ## glm
@@ -49,7 +52,7 @@ resglm <- glm(survived ~ pclass + sex + age + sibsp + parch, family = binomial(l
 predglm <- predict(resglm, dt2_val, type="response")
 caret::confusionMatrix(ifelse(predglm >= 0.5, 1, 0), dt2_val$survived)
 rocglm <- roc(dd[,actual], predglm)
-plot(rocglm, col="orange", add=TRUE)
+plot(rocglm, col=cols[2], add=TRUE)
 
 
 ## rf
@@ -60,7 +63,7 @@ predrf <- predict(resrf, dt_val)
 predrfprob <- predict(resrf, dt_val, type="prob")
 caret::confusionMatrix(as.integer(as.character(predrf)), dt_val$survived)
 rocrf <- roc(dd[,actual], predrfprob[,1])
-plot(rocrf, col="blue", add=TRUE)
+plot(rocrf, col=cols[3], add=TRUE)
 
 ## party
 resparty <- party::ctree(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
@@ -68,16 +71,39 @@ resparty <- party::ctree(as.factor(survived) ~ pclass + sex + age + sibsp + parc
 predparty <- predict(resparty, dt_val, type="prob")
 predparty <- do.call(rbind, lapply(predparty, "[[", 1))
 rocparty <- roc(dd[,actual], predparty[,1])
-plot(rocparty, col="yellow", add=TRUE)
+plot(rocparty, col=cols[4], add=TRUE)
 
 
 ## gbm
-resgbm <- gbm::gbm(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
+resgbm <- gbm::gbm(survived ~ pclass + sex + age + sibsp + parch,
                    distribution="bernoulli", data=dt2_train, n.trees=500)
+predgbm <- predict(resgbm, dt2_val, n.trees=500, type="response")
+rocgbm <- roc(dd[,actual], predgbm)
+plot(rocgbm, col=cols[5], add=TRUE)
 
 
-legend("bottomright", 
-       legend=c("vw", "glm", "rf", "ctree"), 
-       col=c("black","orange","blue", "yellow"),bty="n",lwd=2)
+## xgboost
+dt_train_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_train)
+targetvector <- data.table::data.table(dt_train)[, Y:=0][survived==1, Y:=1][,Y]
+resxgboost <- xgboost::xgboost(data = dt_train_dgc, label=targetvector,
+                               objective="binary:logistic", nrounds=10, eta=1, max.depth=9, verbose=0)
+dt_val_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_val)
+
+predxgboost <- predict(resxgboost, dt_val_dgc)
+rocxgboost <- roc(dd[,actual], predxgboost)
+plot(rocxgboost, col=cols[6], add=TRUE)
 
 
+
+legend("bottomright",
+       legend=c("vw", "glm", "rf", "ctree", "gbm", "xgboost"),
+       col=cols[1:6], bty="n", lwd=2)
+
+## testProbs <- data.frame(obs = dd[,actual],
+##                         vw = dd[, predicted],
+##                         glm = predglm,
+##                         rf = predrfprob[,1],
+##                         ctree = predparty[,1])
+## calplotData <- caret::calibration(obs ~ vw + glm + rf + ctree, data=testProbs)
+## lattice::xyplot(calplotData, auto.key=list(columns=2))
+## ggplot(calplotData, bwidth=2, dwidth=3)
