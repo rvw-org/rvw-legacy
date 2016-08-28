@@ -39,7 +39,7 @@ resvw[["data"]][, actual:=as.factor(dt_val$survived)]
 dd <- resvw[["data"]]
 setwd(cwd)                              # go back
 
-caret::confusionMatrix(ifelse(resvw[["data"]][,predicted] >= 0.5, 1, -1), resvw[["data"]][,actual])
+print(confvw <- caret::confusionMatrix(ifelse(resvw[["data"]][,predicted] >= 0.5, 1, -1), resvw[["data"]][,actual]))
 
 rvw:::plotDensity(resvw[["data"]])   ## TODO: plot method of a class vw
 
@@ -50,7 +50,7 @@ plot(rocvw, col=cols[1])
 ## glm
 resglm <- glm(survived ~ pclass + sex + age + sibsp + parch, family = binomial(logit), data = dt2_train)
 predglm <- predict(resglm, dt2_val, type="response")
-caret::confusionMatrix(ifelse(predglm >= 0.5, 1, 0), dt2_val$survived)
+print(confglm <- caret::confusionMatrix(ifelse(predglm >= 0.5, 1, 0), dt2_val$survived))
 rocglm <- roc(dd[,actual], predglm)
 plot(rocglm, col=cols[2], add=TRUE)
 
@@ -61,7 +61,7 @@ resrf <- randomForest::randomForest(as.factor(survived) ~ pclass + sex + age + s
                                     ntree=5000, importance=TRUE, keep.forest=TRUE)
 predrf <- predict(resrf, dt_val)
 predrfprob <- predict(resrf, dt_val, type="prob")
-caret::confusionMatrix(as.integer(as.character(predrf)), dt_val$survived)
+print(confrf <- caret::confusionMatrix(as.integer(as.character(predrf)), dt_val$survived))
 rocrf <- roc(dd[,actual], predrfprob[,1])
 plot(rocrf, col=cols[3], add=TRUE)
 
@@ -70,6 +70,7 @@ resparty <- party::ctree(as.factor(survived) ~ pclass + sex + age + sibsp + parc
                          data=dt_train)
 predparty <- predict(resparty, dt_val, type="prob")
 predparty <- do.call(rbind, lapply(predparty, "[[", 1))
+print(confparty <- caret::confusionMatrix(ifelse(predparty <= 0.5, 1, -1), dt_val$survived))
 rocparty <- roc(dd[,actual], predparty[,1])
 plot(rocparty, col=cols[4], add=TRUE)
 
@@ -78,6 +79,7 @@ plot(rocparty, col=cols[4], add=TRUE)
 resgbm <- gbm::gbm(survived ~ pclass + sex + age + sibsp + parch,
                    distribution="bernoulli", data=dt2_train, n.trees=500)
 predgbm <- predict(resgbm, dt2_val, n.trees=500, type="response")
+print(confgbm <- caret::confusionMatrix(ifelse(predgbm >= 0.5, 1, -1), dt_val$survived))
 rocgbm <- roc(dd[,actual], predgbm)
 plot(rocgbm, col=cols[5], add=TRUE)
 
@@ -88,8 +90,9 @@ dt_val_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_val)
 targetvector <- data.table::data.table(dt_train)[, Y:=0][survived==1, Y:=1][,Y]
 resxgboost <- xgboost::xgboost(data = dt_train_dgc, label=targetvector,
                                objective="binary:logistic", nrounds=25, eta=0.75, max.depth=5, 
-                               verbose=1)
+                               verbose=0)
 predxgboost <- xgboost::predict(resxgboost, dt_val_dgc)
+print(confxgboost <- caret::confusionMatrix(ifelse(predxgboost >= 0.5, 1, -1), dt_val$survived))
 rocxgboost <- roc(dd[,actual], predxgboost)
 plot(rocxgboost, col=cols[6], add=TRUE)
 
@@ -110,3 +113,4 @@ legend("bottomright",
 ## calplotData <- caret::calibration(obs ~ vw + glm + rf + ctree, data=testProbs)
 ## lattice::xyplot(calplotData, auto.key=list(columns=2))
 ## ggplot(calplotData, bwidth=2, dwidth=3)
+
