@@ -114,3 +114,11 @@ legend("bottomright",
 ## lattice::xyplot(calplotData, auto.key=list(columns=2))
 ## ggplot(calplotData, bwidth=2, dwidth=3)
 
+cfmats <- list(vw=confvw, glm=confglm, rf=confrf, party=confparty, gbm=confgbm, xgboost=confxgboost)
+df <- do.call(rbind, lapply(names(cfmats), function(n) {
+                           M <- cfmats[[n]]$table
+                           rownames(M) <- c("pred:dead", "pred:alive")
+                           colnames(M) <- c("ref:dead", "ref:alive")
+                           data.frame(M, Method=n)
+                           }))
+ggplot(df, aes(y=Freq,x=Method,fill=Method)) +  facet_grid(. ~ Prediction + Reference) + geom_bar(stat="identity") + scale_fill_brewer() + theme_dark()
