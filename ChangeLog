@@ -1,3 +1,7 @@
+2016-08-29  Dirk Eddelbuettel  <edd@debian.org>
+
+	* README.md: Added
+
 2016-08-23  Dirk Eddelbuettel  <edd@debian.org>
 
 	* demo/vw_example_4.R: Rewritten/extended, now with ctree and gbm
