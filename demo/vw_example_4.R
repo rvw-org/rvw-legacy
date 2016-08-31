@@ -4,6 +4,7 @@ suppressMessages(library(ggplot2))
 suppressMessages(library(pROC))
 stopifnot(requireNamespace("caret", quietly=TRUE))
 stopifnot(requireNamespace("randomForest", quietly=TRUE))
+stopifnot(requireNamespace("ranger", quietly=TRUE))
 stopifnot(requireNamespace("party", quietly=TRUE))
 stopifnot(requireNamespace("gbm", quietly=TRUE))
 stopifnot(requireNamespace("xgboost", quietly=TRUE))
@@ -65,6 +66,16 @@ print(confrf <- caret::confusionMatrix(as.integer(as.character(predrf)), dt_val$
 rocrf <- roc(dd[,actual], predrfprob[,1])
 plot(rocrf, col=cols[3], add=TRUE)
 
+
+## ranger
+resranger <- ranger::ranger(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
+                            data=dt_train, write.forest=TRUE, probability=TRUE)
+#                            ntree=5000, importance=TRUE, keep.forest=TRUE)
+predranger <- predict(resranger, dt_val, type="prob")
+print(confranger <- caret::confusionMatrix(ifelse(predranger$predictions[,1] >= 0.5, 1, -1), dt_val$survived))
+rocranger <- roc(dd[,actual], predranger$predictions[,1])
+plot(rocrf, col=cols[4], add=TRUE)
+
 ## party
 resparty <- party::ctree(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
                          data=dt_train)
@@ -72,7 +83,7 @@ predparty <- predict(resparty, dt_val, type="prob")
 predparty <- do.call(rbind, lapply(predparty, "[[", 1))
 print(confparty <- caret::confusionMatrix(ifelse(predparty <= 0.5, 1, -1), dt_val$survived))
 rocparty <- roc(dd[,actual], predparty[,1])
-plot(rocparty, col=cols[4], add=TRUE)
+plot(rocparty, col=cols[5], add=TRUE)
 
 
 ## gbm
@@ -81,7 +92,7 @@ resgbm <- gbm::gbm(survived ~ pclass + sex + age + sibsp + parch,
 predgbm <- predict(resgbm, dt2_val, n.trees=500, type="response")
 print(confgbm <- caret::confusionMatrix(ifelse(predgbm >= 0.5, 1, -1), dt_val$survived))
 rocgbm <- roc(dd[,actual], predgbm)
-plot(rocgbm, col=cols[5], add=TRUE)
+plot(rocgbm, col=cols[6], add=TRUE)
 
 
 ## xgboost
@@ -89,21 +100,22 @@ dt_train_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_train)
 dt_val_dgc <- Matrix::sparse.model.matrix(survived ~ . - 1, data=dt_val)
 targetvector <- data.table::data.table(dt_train)[, Y:=0][survived==1, Y:=1][,Y]
 resxgboost <- xgboost::xgboost(data = dt_train_dgc, label=targetvector,
-                               objective="binary:logistic", nrounds=25, eta=0.75, max.depth=5, 
+                               objective="binary:logistic", nrounds=25, eta=0.75, max.depth=5,
                                verbose=0)
 predxgboost <- xgboost::predict(resxgboost, dt_val_dgc)
 print(confxgboost <- caret::confusionMatrix(ifelse(predxgboost >= 0.5, 1, -1), dt_val$survived))
 rocxgboost <- roc(dd[,actual], predxgboost)
-plot(rocxgboost, col=cols[6], add=TRUE)
+plot(rocxgboost, col=cols[7], add=TRUE)
 
 legend("bottomright",
-       legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)), 
+       legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)),
                 paste("glm",     format(as.numeric(rocglm$auc), digits=4)),
                 paste("rf",      format(as.numeric(rocrf$auc), digits=4)),
+                paste("ranger",  format(as.numeric(rocranger$auc), digits=4)),
                 paste("ctree",   format(as.numeric(rocparty$auc), digits=4)),
                 paste("gbm",     format(as.numeric(rocgbm$auc), digits=4)),
                 paste("xgboost", format(as.numeric(rocxgboost$auc), digits=4))),
-       col=cols[1:6], bty="n", lwd=2)
+       col=cols[1:7], bty="n", lwd=2)
 
 ## testProbs <- data.frame(obs = dd[,actual],
 ##                         vw = dd[, predicted],
