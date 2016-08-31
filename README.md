@@ -31,6 +31,15 @@ On other systems follow the
 [Vowpal Wabbit instructions](https://github.com/JohnLangford/vowpal_wabbit/blob/master/README.md).
 
 
+### Examples
+
+Several demos are included in the `demo/` directory and accessible (once installed) via the `demo()` function.  Here
+are tow figures from `demo/vw_example_4.r` which revisits the Titanic dataset.
+
+![](https://raw.githubusercontent.com/eddelbuettel/rvw/master/inst/images/roc_curves.png)
+
+![](https://raw.githubusercontent.com/eddelbuettel/rvw/master/inst/images/confusion_matrices.png)
+
 ### Status
 
 Still being worked on.
