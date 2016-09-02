@@ -5,6 +5,7 @@ suppressMessages(library(pROC))
 stopifnot(requireNamespace("caret", quietly=TRUE))
 stopifnot(requireNamespace("randomForest", quietly=TRUE))
 stopifnot(requireNamespace("ranger", quietly=TRUE))
+stopifnot(requireNamespace("Rborist", quietly=TRUE))
 stopifnot(requireNamespace("party", quietly=TRUE))
 stopifnot(requireNamespace("gbm", quietly=TRUE))
 stopifnot(requireNamespace("xgboost", quietly=TRUE))
@@ -70,11 +71,26 @@ plot(rocrf, col=cols[3], add=TRUE)
 ## ranger
 resranger <- ranger::ranger(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
                             data=dt_train, write.forest=TRUE, probability=TRUE)
-#                            ntree=5000, importance=TRUE, keep.forest=TRUE)
 predranger <- predict(resranger, dt_val, type="prob")
 print(confranger <- caret::confusionMatrix(ifelse(predranger$predictions[,1] >= 0.5, 1, -1), dt_val$survived))
 rocranger <- roc(dd[,actual], predranger$predictions[,1])
 plot(rocrf, col=cols[4], add=TRUE)
+
+
+## Rborist
+resrborist <- Rborist::Rborist(dt_train[, .(pclass,sex,age,sibsp,parch)],
+                               as.factor(dt_train[,survived]),
+                               ctgCensus = "prob")
+predrborist <- predict(resrborist,
+                       dt_val[, .(pclass,sex,age,sibsp,parch)],
+                       ctgCensus = "prob")
+print(confrborist <- caret::confusionMatrix(ifelse(predrborist$prob[,1] >= 0.5, -1, 1),
+                                            dt_val$survived))
+rocrborist <- roc(dd[,actual], predrborist$yPred)
+plot(rocrborist, col=cols[5], add=TRUE)
+
+
+
 
 ## party
 resparty <- party::ctree(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
@@ -83,7 +99,7 @@ predparty <- predict(resparty, dt_val, type="prob")
 predparty <- do.call(rbind, lapply(predparty, "[[", 1))
 print(confparty <- caret::confusionMatrix(ifelse(predparty <= 0.5, 1, -1), dt_val$survived))
 rocparty <- roc(dd[,actual], predparty[,1])
-plot(rocparty, col=cols[5], add=TRUE)
+plot(rocparty, col=cols[6], add=TRUE)
 
 
 ## gbm
@@ -92,7 +108,7 @@ resgbm <- gbm::gbm(survived ~ pclass + sex + age + sibsp + parch,
 predgbm <- predict(resgbm, dt2_val, n.trees=500, type="response")
 print(confgbm <- caret::confusionMatrix(ifelse(predgbm >= 0.5, 1, -1), dt_val$survived))
 rocgbm <- roc(dd[,actual], predgbm)
-plot(rocgbm, col=cols[6], add=TRUE)
+plot(rocgbm, col=cols[7], add=TRUE)
 
 
 ## xgboost
@@ -105,17 +121,18 @@ resxgboost <- xgboost::xgboost(data = dt_train_dgc, label=targetvector,
 predxgboost <- xgboost::predict(resxgboost, dt_val_dgc)
 print(confxgboost <- caret::confusionMatrix(ifelse(predxgboost >= 0.5, 1, -1), dt_val$survived))
 rocxgboost <- roc(dd[,actual], predxgboost)
-plot(rocxgboost, col=cols[7], add=TRUE)
+plot(rocxgboost, col=cols[8], add=TRUE)
 
 legend("bottomright",
        legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)),
                 paste("glm",     format(as.numeric(rocglm$auc), digits=4)),
                 paste("rf",      format(as.numeric(rocrf$auc), digits=4)),
                 paste("ranger",  format(as.numeric(rocranger$auc), digits=4)),
+                paste("rborist", format(as.numeric(rocrborist$auc), digits=4)),
                 paste("ctree",   format(as.numeric(rocparty$auc), digits=4)),
                 paste("gbm",     format(as.numeric(rocgbm$auc), digits=4)),
                 paste("xgboost", format(as.numeric(rocxgboost$auc), digits=4))),
-       col=cols[1:7], bty="n", lwd=2)
+       col=cols[1:8], bty="n", lwd=2)
 
 ## testProbs <- data.frame(obs = dd[,actual],
 ##                         vw = dd[, predicted],
@@ -126,11 +143,17 @@ legend("bottomright",
 ## lattice::xyplot(calplotData, auto.key=list(columns=2))
 ## ggplot(calplotData, bwidth=2, dwidth=3)
 
-cfmats <- list(vw=confvw, glm=confglm, rf=confrf, party=confparty, gbm=confgbm, xgboost=confxgboost)
+cfmats <- list(vw=confvw, glm=confglm, rf=confrf, ranger=confranger, rborist=confrborist,
+               party=confparty, gbm=confgbm, xgboost=confxgboost)
 df <- do.call(rbind, lapply(names(cfmats), function(n) {
                            M <- cfmats[[n]]$table
                            rownames(M) <- c("pred:dead", "pred:alive")
                            colnames(M) <- c("ref:dead", "ref:alive")
                            data.frame(M, Method=n)
                            }))
-ggplot(df, aes(y=Freq,x=Method,fill=Method)) +  facet_grid(. ~ Prediction + Reference) + geom_bar(stat="identity") + scale_fill_brewer() + theme_dark()
+p <- ggplot(df, aes(y=Freq,x=Method,fill=Method)) +
+    facet_grid(. ~ Prediction + Reference) +
+    geom_bar(stat="identity") +
+    scale_fill_brewer() +
+    theme_dark()
+p
