@@ -17,7 +17,7 @@ data("etitanic", package="earth")
 dt <- dt2 <- etitanic
 dt[, "survived"] <- ifelse(dt[, "survived"] == 1, 1, -1)
 
-set.seed(123)                           # arbitrary but fixed seed
+set.seed(123)                                  # arbitrary but fixed seed
 ind_train <- sample(1:nrow(dt), 0.8*nrow(dt))  # separate train and validation data
 dt_train <- dt[ind_train,]
 dt_val <- dt[-ind_train,]
@@ -41,18 +41,32 @@ resvw[["data"]][, actual:=as.factor(dt_val$survived)]
 dd <- resvw[["data"]]
 setwd(cwd)                              # go back
 
-print(confvw <- caret::confusionMatrix(ifelse(resvw[["data"]][,predicted] >= 0.5, 1, -1), resvw[["data"]][,actual]))
+print(confvw <- caret::confusionMatrix(ifelse(resvw[["data"]][,predicted] >= 0.5, 1, -1), resvw[["data"]][,actual], positive="1"))
 
 rvw:::plotDensity(resvw[["data"]])   ## TODO: plot method of a class vw
 
+## recode to (0, 1) rather than (-1, 1)
+predictions <- data.table::copy(dd)
+predictions[ actual=="-1", actual:="0" ]
+data.table::setnames(predictions, "predicted", "rvw")
+lattice::xyplot(caret::calibration(actual ~ rvw, data=predictions))
+
+
+## roc plot
 rocvw <- roc(dd[,actual], dd[, predicted])
 plot(rocvw, col=cols[1])
+
+
 
 
 ## glm
 resglm <- glm(survived ~ pclass + sex + age + sibsp + parch, family = binomial(logit), data = dt2_train)
 predglm <- predict(resglm, dt2_val, type="response")
-print(confglm <- caret::confusionMatrix(ifelse(predglm >= 0.5, 1, 0), dt2_val$survived))
+print(confglm <- caret::confusionMatrix(ifelse(predglm >= 0.5, 1, 0), dt2_val$survived, positive="1"))
+
+predictions[, glm:=predglm]
+lattice::xyplot(caret::calibration(actual ~ rvw + glm, data=predictions), auto.key=list(columns=2))
+
 rocglm <- roc(dd[,actual], predglm)
 plot(rocglm, col=cols[2], add=TRUE)
 
@@ -63,8 +77,12 @@ resrf <- randomForest::randomForest(as.factor(survived) ~ pclass + sex + age + s
                                     ntree=5000, importance=TRUE, keep.forest=TRUE)
 predrf <- predict(resrf, dt_val)
 predrfprob <- predict(resrf, dt_val, type="prob")
-print(confrf <- caret::confusionMatrix(as.integer(as.character(predrf)), dt_val$survived))
-rocrf <- roc(dd[,actual], predrfprob[,1])
+print(confrf <- caret::confusionMatrix(as.integer(as.character(predrf)), dt_val$survived, positive="1"))
+
+predictions[, rf:=predrfprob[,2]]
+lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf, data=predictions), auto.key=list(columns=2))
+
+rocrf <- roc(dd[,actual], predrfprob[,2])
 plot(rocrf, col=cols[3], add=TRUE)
 
 
