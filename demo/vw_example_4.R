@@ -51,10 +51,8 @@ predictions[ actual=="-1", actual:="0" ]
 data.table::setnames(predictions, "predicted", "rvw")
 lattice::xyplot(caret::calibration(actual ~ rvw, data=predictions))
 
-
-## roc plot
 rocvw <- roc(dd[,actual], dd[, predicted])
-plot(rocvw, col=cols[1])
+
 
 
 
@@ -68,7 +66,6 @@ predictions[, glm:=predglm]
 lattice::xyplot(caret::calibration(actual ~ rvw + glm, data=predictions), auto.key=list(columns=2))
 
 rocglm <- roc(dd[,actual], predglm)
-plot(rocglm, col=cols[2], add=TRUE)
 
 
 ## rf
@@ -83,16 +80,18 @@ predictions[, rf:=predrfprob[,2]]
 lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf, data=predictions), auto.key=list(columns=2))
 
 rocrf <- roc(dd[,actual], predrfprob[,2])
-plot(rocrf, col=cols[3], add=TRUE)
 
 
 ## ranger
 resranger <- ranger::ranger(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
                             data=dt_train, write.forest=TRUE, probability=TRUE)
 predranger <- predict(resranger, dt_val, type="prob")
-print(confranger <- caret::confusionMatrix(ifelse(predranger$predictions[,1] >= 0.5, 1, -1), dt_val$survived))
+print(confranger <- caret::confusionMatrix(ifelse(predranger$predictions[,1] >= 0.5, 1, -1), dt_val$survived, positive="1"))
+
+predictions[, ranger:=predranger$predictions[,1]]
+lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf + ranger, data=predictions), auto.key=list(columns=2))
+
 rocranger <- roc(dd[,actual], predranger$predictions[,1])
-plot(rocrf, col=cols[4], add=TRUE)
 
 
 ## Rborist
@@ -103,9 +102,12 @@ predrborist <- predict(resrborist,
                        dt_val[, .(pclass,sex,age,sibsp,parch)],
                        ctgCensus = "prob")
 print(confrborist <- caret::confusionMatrix(ifelse(predrborist$prob[,1] >= 0.5, -1, 1),
-                                            dt_val$survived))
-rocrborist <- roc(dd[,actual], predrborist$yPred)
-plot(rocrborist, col=cols[5], add=TRUE)
+                                            dt_val$survived, positive="1"))
+
+predictions[, rborist:=predrborist$prob[,2]]
+lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf + ranger + rborist, data=predictions), auto.key=list(columns=2))
+
+rocrborist <- roc(dd[,actual], predrborist$prob[,2])
 
 
 
@@ -114,10 +116,13 @@ plot(rocrborist, col=cols[5], add=TRUE)
 resparty <- party::ctree(as.factor(survived) ~ pclass + sex + age + sibsp + parch,
                          data=dt_train)
 predparty <- predict(resparty, dt_val, type="prob")
-predparty <- do.call(rbind, lapply(predparty, "[[", 1))
-print(confparty <- caret::confusionMatrix(ifelse(predparty <= 0.5, 1, -1), dt_val$survived))
+predparty <- do.call(rbind, lapply(predparty, "[[", 2))
+print(confparty <- caret::confusionMatrix(ifelse(predparty <= 0.5, -1, 1), dt_val$survived, positive="1"))
+
+predictions[, party:=predparty]
+lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf + ranger + rborist + party, data=predictions, cut=10), auto.key=list(columns=2))
+
 rocparty <- roc(dd[,actual], predparty[,1])
-plot(rocparty, col=cols[6], add=TRUE)
 
 
 ## gbm
@@ -125,8 +130,13 @@ resgbm <- gbm::gbm(survived ~ pclass + sex + age + sibsp + parch,
                    distribution="bernoulli", data=dt2_train, n.trees=500)
 predgbm <- predict(resgbm, dt2_val, n.trees=500, type="response")
 print(confgbm <- caret::confusionMatrix(ifelse(predgbm >= 0.5, 1, -1), dt_val$survived))
+
+#predictions[, gbm:=predgbm]
+#lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf + ranger + rborist + party + gbm, 
+#                                   data=predictions, cut=10), 
+#                auto.key=list(columns=2))
+
 rocgbm <- roc(dd[,actual], predgbm)
-plot(rocgbm, col=cols[7], add=TRUE)
 
 
 ## xgboost
@@ -137,9 +147,14 @@ resxgboost <- xgboost::xgboost(data = dt_train_dgc, label=targetvector,
                                objective="binary:logistic", nrounds=25, eta=0.75, max.depth=5,
                                verbose=0)
 predxgboost <- xgboost::predict(resxgboost, dt_val_dgc)
+
+predictions[, xgboost:=predxgboost]
+lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf + ranger + rborist + party + xgboost, 
+                                   data=predictions, cut=10), 
+                auto.key=list(columns=2))
+
 print(confxgboost <- caret::confusionMatrix(ifelse(predxgboost >= 0.5, 1, -1), dt_val$survived))
 rocxgboost <- roc(dd[,actual], predxgboost)
-plot(rocxgboost, col=cols[8], add=TRUE)
 
 legend("bottomright",
        legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)),
@@ -175,3 +190,13 @@ p <- ggplot(df, aes(y=Freq,x=Method,fill=Method)) +
     scale_fill_brewer() +
     theme_dark()
 p
+
+## roc plot
+plot(rocvw, col=cols[1])
+plot(rocglm, col=cols[2], add=TRUE)
+plot(rocrf, col=cols[3], add=TRUE)
+plot(rocranger, col=cols[4], add=TRUE)
+plot(rocrborist, col=cols[5], add=TRUE)
+plot(rocparty, col=cols[6], add=TRUE)
+plot(rocgbm, col=cols[7], add=TRUE)
+plot(rocxgboost, col=cols[8], add=TRUE)
