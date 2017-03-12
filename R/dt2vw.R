@@ -55,8 +55,6 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
     ## parse variable names
     specChar      <- "\\(|\\)|\\||\\:|'"
     specCharSpace <- "\\(|\\)|\\||\\:| |'"
-    #specChar      <- "\\(|\\)|\\||\\:"
-    #specCharSpace <- "\\(|\\)|\\||\\:| "
 
     parsingNames <- function(x) {
         ret <- c()
