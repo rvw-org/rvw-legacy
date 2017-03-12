@@ -41,7 +41,7 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
     if (!is.numeric(data[[target]])) {
         if (is.logical(data[[target]]) |
             sum(levels(factor(data[[target]])) == levels(factor(c(0,1)))) == 2) {
-            data[[target]][data[[target]] == TRUE] <- 1
+            data[[target]][data[[target]] == TRUE]  <- 1
             data[[target]][data[[target]] == FALSE] <- -1
         }
     }
@@ -53,8 +53,10 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
     }
 
     ## parse variable names
-    specChar <- '\\(|\\)|\\||\\:'
-    specCharSpace <- '\\(|\\)|\\||\\:| '
+    specChar      <- "\\(|\\)|\\||\\:|'"
+    specCharSpace <- "\\(|\\)|\\||\\:| |'"
+    #specChar      <- "\\(|\\)|\\||\\:"
+    #specCharSpace <- "\\(|\\)|\\||\\:| "
 
     parsingNames <- function(x) {
         ret <- c()
