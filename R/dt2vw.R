@@ -35,6 +35,8 @@
 dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag = NULL,
                   hard_parse = FALSE, append = FALSE) {
 
+    if (any(is.na(data))) stop("Please remove any 'NA' values from data first.", call. = FALSE)
+    
     data <- copy(setDT(data))
 
     ## change target if its boolean to take values in {-1,1}

@@ -1,6 +1,9 @@
 2017-03-19  Dirk Eddelbuettel  <edd@debian.org>
 
-	* R/dt2vw.R (dt2vw): Make a copy of the dataset
+	* DESCRIPTION (Version, Date): Roll minor version 
+
+	* R/dt2vw.R (dt2vw): Make a copy of the dataset;
+	test for NA values in input data set
 
 2017-03-12  Selim Raboudi  <selim.raboudi@axa.com>
 
