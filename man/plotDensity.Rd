@@ -17,11 +17,10 @@ A ggplot2 object is returned, but the function is invoked
 \description{
 Simple density plotting function for classification outcome
 }
-\author{
-Dirk Eddelbuettel
-}
 \references{
 See Zumel and Mount, Practical Data Science with R,
  page 101
 }
-
+\author{
+Dirk Eddelbuettel
+}

@@ -12,4 +12,4 @@ SystemRequirements: The Vowpal Wabbit binary 'vw' has to be in the path.
 License: GPL (>= 2) | BSD_3_clause + file LICENSE
 Imports: pROC, data.table, ggplot2
 Suggests: yaml, caret, earth, randomForest, ranger, party, gbm, xgboost
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

@@ -112,4 +112,3 @@ auc = vw(training_data='X_train.vw', validation_data='X_valid.vw',
         interactions=NULL, extra='--stage_poly')
 }
 }
-

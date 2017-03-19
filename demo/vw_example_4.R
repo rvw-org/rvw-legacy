@@ -156,25 +156,6 @@ lattice::xyplot(caret::calibration(actual ~ rvw + glm + rf + ranger + rborist + 
 print(confxgboost <- caret::confusionMatrix(ifelse(predxgboost >= 0.5, 1, -1), dt_val$survived))
 rocxgboost <- roc(dd[,actual], predxgboost)
 
-legend("bottomright",
-       legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)),
-                paste("glm",     format(as.numeric(rocglm$auc), digits=4)),
-                paste("rf",      format(as.numeric(rocrf$auc), digits=4)),
-                paste("ranger",  format(as.numeric(rocranger$auc), digits=4)),
-                paste("rborist", format(as.numeric(rocrborist$auc), digits=4)),
-                paste("ctree",   format(as.numeric(rocparty$auc), digits=4)),
-                paste("gbm",     format(as.numeric(rocgbm$auc), digits=4)),
-                paste("xgboost", format(as.numeric(rocxgboost$auc), digits=4))),
-       col=cols[1:8], bty="n", lwd=2)
-
-## testProbs <- data.frame(obs = dd[,actual],
-##                         vw = dd[, predicted],
-##                         glm = predglm,
-##                         rf = predrfprob[,1],
-##                         ctree = predparty[,1])
-## calplotData <- caret::calibration(obs ~ vw + glm + rf + ctree, data=testProbs)
-## lattice::xyplot(calplotData, auto.key=list(columns=2))
-## ggplot(calplotData, bwidth=2, dwidth=3)
 
 cfmats <- list(vw=confvw, glm=confglm, rf=confrf, ranger=confranger, rborist=confrborist,
                party=confparty, gbm=confgbm, xgboost=confxgboost)
@@ -200,3 +181,13 @@ plot(rocrborist, col=cols[5], add=TRUE)
 plot(rocparty, col=cols[6], add=TRUE)
 plot(rocgbm, col=cols[7], add=TRUE)
 plot(rocxgboost, col=cols[8], add=TRUE)
+legend("bottomright",
+       legend=c(paste("vw",      format(as.numeric(rocvw$auc), digits=4)),
+                paste("glm",     format(as.numeric(rocglm$auc), digits=4)),
+                paste("rf",      format(as.numeric(rocrf$auc), digits=4)),
+                paste("ranger",  format(as.numeric(rocranger$auc), digits=4)),
+                paste("rborist", format(as.numeric(rocrborist$auc), digits=4)),
+                paste("ctree",   format(as.numeric(rocparty$auc), digits=4)),
+                paste("gbm",     format(as.numeric(rocgbm$auc), digits=4)),
+                paste("xgboost", format(as.numeric(rocxgboost$auc), digits=4))),
+       col=cols[1:8], bty="n", lwd=2)

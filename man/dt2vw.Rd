@@ -42,4 +42,3 @@ and "var"}
 \description{
 Create a vw data file from a R data.frame object
 }
-
