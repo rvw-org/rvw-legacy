@@ -1,3 +1,14 @@
+2017-03-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll minor version 
+
+	* R/dt2vw.R (dt2vw): Make a copy of the dataset;
+	test for NA values in input data set
+
+2017-03-12  Selim Raboudi  <selim.raboudi@axa.com>
+
+	* R/dt2vw.R (dt2vw): Allow for escaped variable names
+
 2016-09-02  Dirk Eddelbuettel  <edd@debian.org>
 
 	* demo/vw_example_4.R: Added Rborist
