@@ -1,3 +1,11 @@
+2017-03-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/dt2vw.R (dt2vw): Make a copy of the dataset
+
+2017-03-12  Selim Raboudi  <selim.raboudi@axa.com>
+
+	* R/dt2vw.R (dt2vw): Allow for escaped variable names
+
 2016-09-02  Dirk Eddelbuettel  <edd@debian.org>
 
 	* demo/vw_example_4.R: Added Rborist
