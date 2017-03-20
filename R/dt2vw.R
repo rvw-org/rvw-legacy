@@ -32,19 +32,21 @@
 #'  like '_', or same variables perceived differently like "_var"
 #'  and "var"
 #' @param append [bool] data to be appended to result file
-dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag = NULL,
+dt2vw <- function(data, fileName, namespaces = NULL, target = NULL, weight = NULL, tag = NULL,
                   hard_parse = FALSE, append = FALSE) {
 
     if (any(is.na(data))) stop("Please remove any 'NA' values from data first.", call. = FALSE)
     
-    data <- copy(setDT(data))
+    data <- data.table::copy(data.table::setDT(data))
 
     ## change target if its boolean to take values in {-1,1}
-    if (!is.numeric(data[[target]])) {
-        if (is.logical(data[[target]]) |
-            sum(levels(factor(data[[target]])) == levels(factor(c(0,1)))) == 2) {
-            data[[target]][data[[target]] == TRUE]  <- 1
-            data[[target]][data[[target]] == FALSE] <- -1
+    if (!is.null(target)) {
+        if (!is.numeric(data[[target]])) {
+            if (is.logical(data[[target]]) |
+                sum(levels(factor(data[[target]])) == levels(factor(c(0,1)))) == 2) {
+                data[[target]][data[[target]] == TRUE]  <- 1
+                data[[target]][data[[target]] == FALSE] <- -1
+            }
         }
     }
 
@@ -196,8 +198,6 @@ dt2vw <- function(data, fileName, namespaces = NULL, target, weight = NULL, tag 
 }
 
 
-## Work around the "only 100 arguments are allowed" error
-## in base::sprintf(). Only works with 'fmt' of length 1.
 ## Work around the "only 100 arguments are allowed" error
 ## in base::sprintf(). Only works with 'fmt' of length 1.
 sprintf2 <- function(fmt, ...) {
