@@ -202,18 +202,29 @@ vw <- function(training_data, validation_data,  model='mdl.vw',
 # and probabilities (out_file) from vowpal wabbit
 # Also added an option to plot or not the AUC
 roc_auc <- function(out_probs, validation_labels, plot_roc, cmd, ...){
-    probs <- fread(out_probs)[['V1']]
-    labels <- fread(validation_labels)[['V1']]
+    probs <- as.numeric(fread(out_probs)[['V1']])
+    labels <- as.numeric(fread(validation_labels)[['V1']])
 
-    if (!identical(length(probs), length(labels)))
-        stop('The length of the probabilities and labels is different')
+    ## Bypass shorter predictions by vw
+    probs_len <- length(probs)
+    labels_len <- length(labels)
+    if (!identical(probs_len, labels_len)) {
+        # stop('The length of the probabilities and labels is different')
+        warning('The length of the probabilities and labels is different')
+            if (probs_len < labels_len) {
+                labels <- labels[1:probs_len]
+            } else {
+                probs <- probs[1:labels_len]
+            }
+    }
+
 
     ## Fix cmd for adding it in title
     cmd <- sapply(strsplit(cmd, '-f'), function(x) paste0(x, collapse='\n'))
     cmd <- sapply(strsplit(cmd, '-c'), function(x) paste0(x, collapse='\n'))
 
     ## Plot ROC curve and return AUC
-    roc <- roc(labels, probs, auc=TRUE, print.auc=TRUE, print.thres=TRUE)
+    roc <- roc(labels, probs, auc=TRUE, print.auc=TRUE, print.thres=TRUE, na.rm = TRUE)
     if (plot_roc){
         print(plot.roc(roc, main=cmd, cex.main = 0.5, ...))
     }
