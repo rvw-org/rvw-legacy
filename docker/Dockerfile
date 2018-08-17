@@ -11,7 +11,10 @@ RUN apt-get update \
 		r-cran-rcpp \
                 r-cran-testthat \
                 r-cran-runit \
+                r-cran-data.table \
+                r-cran-knitr \
 		libvw-dev \
+        && install.r RApiSerialize \
         && mkdir ~/.R \
         && echo _R_CHECK_FORCE_SUGGESTS_=FALSE > ~/.R/check.Renviron 
 
