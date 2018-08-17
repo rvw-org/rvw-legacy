@@ -14,6 +14,7 @@ RUN apt-get update \
                 r-cran-data.table \
                 r-cran-knitr \
 		libvw-dev \
+                libboost-program-options-dev \
         && install.r RApiSerialize \
         && mkdir ~/.R \
         && echo _R_CHECK_FORCE_SUGGESTS_=FALSE > ~/.R/check.Renviron 
