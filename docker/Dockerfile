@@ -7,13 +7,15 @@ LABEL org.label-schema.license="GPL-2.0" \
       maintainer="Dirk Eddelbuettel <edd@debian.org>"
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		r-cran-rcpp \
+        && apt-get install -y --no-install-recommends \
+                r-cran-rcpp \
                 r-cran-testthat \
                 r-cran-runit \
                 r-cran-data.table \
                 r-cran-knitr \
-		libvw-dev \
+                r-cran-rmarkdown \
+                libvw-dev \
+                vowpal-wabbit \
                 libboost-program-options-dev \
         && install.r RApiSerialize \
         && mkdir ~/.R \
