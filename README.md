@@ -1,6 +1,7 @@
-## rvw
 
-R interface to [Vowpal Wabbit](https://github.com/JohnLangford/vowpal_wabbit/wiki)
+## rvw-legacy
+
+(Legacy) R interface to [Vowpal Wabbit](https://github.com/JohnLangford/vowpal_wabbit/wiki)
 
 
 ### What is Vowpal Wabbit?
@@ -10,13 +11,16 @@ on-line learner built by [John Langford](http://hunch.net/~jl/) and others,
 initially at Yahoo! Research and now at Microsoft Research
 
 
-### What does _rvw_ do?
+### What does _rvw-legacy_ do?
 
-This _rvw_ package builds upon the
+This _rvw-legacy_ package builds upon the
 [skeleton r.vw package](https://github.com/JohnLangford/vowpal_wabbit/tree/master/R/r.vw)
 in the [Vowpal Wabbit](https://github.com/JohnLangford/vowpal_wabbit/wiki)
 sources. It has streamlined the packaging and added a few things here and
 there.
+
+The newer [rvw](https://github.com/rvw-org/rvw) package offers a fresher and more powerful
+approach leveraging the Vowpal Wabbit _library_ rather than calling the _binary_.
 
 
 ### Requirements
@@ -42,16 +46,12 @@ are tow figures from `demo/vw_example_4.r` which revisits the Titanic dataset.
 
 ### Status
 
-Still being worked on.
+Now mostly dormant as [rvw](https://github.com/rvw-org/rvw) offers a fresher approach.
 
 
 ### What about [RVowpalWabbit](https://github.com/eddelbuettel/rvowpalwabbit) ?
 
-I will get to [RVowpalWabbit](https://github.com/eddelbuettel/rvowpalwabbit)
-which is now much easier given that a)
-[Vowpal Wabbit](https://github.com/JohnLangford/vowpal_wabbit/wiki) itself
-now sports a sane build system and b) distributions contain a library for
-it. Consider _rvw_ as a stepping stone.
+Also legacy just like _rvw-legacy_.
 
 
 ### Author
@@ -60,7 +60,7 @@ The
 [r.vw package](https://github.com/JohnLangford/vowpal_wabbit/tree/master/R/r.vw)
 was written by [Selim Raboudi](https://github.com/SelimRaboudi).
 
-_rvw_ is being written by Dirk Eddelbuettel
+_rvw-legacy_ was being written by Dirk Eddelbuettel
 
 
 ### License
